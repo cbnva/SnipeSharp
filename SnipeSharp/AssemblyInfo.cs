@@ -37,5 +37,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("2.0.0.0")]
 [assembly: AssemblyInformationalVersion("2.0.0")]
 [assembly: NeutralResourcesLanguage("en")]
-[assembly: InternalsVisibleTo("SnipeSharp.Tests")]
 [assembly: InternalsVisibleTo("SnipeSharp.Test")]

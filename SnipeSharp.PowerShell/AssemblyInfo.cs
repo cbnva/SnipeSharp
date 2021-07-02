@@ -20,4 +20,3 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyFileVersion("0.0.1.0")]
 [assembly: AssemblyInformationalVersion("0.0.1")]
 [assembly: NeutralResourcesLanguage("en")]
-[assembly: InternalsVisibleTo("SnipeSharp.Tests")]

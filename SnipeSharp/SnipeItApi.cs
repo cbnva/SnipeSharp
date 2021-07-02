@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using RestSharp;
 using SnipeSharp.Client;
 using SnipeSharp.EndPoint;
-using SnipeSharp.Exceptions;
 using SnipeSharp.Models;
 
 namespace SnipeSharp
@@ -47,10 +46,6 @@ namespace SnipeSharp
         /// <returns>If the API is accessible or not.</returns>
         public bool TestConnection()
         {
-            if(!Client.HasUri)
-                throw new NullApiUriException();
-            if(!Client.HasToken)
-                throw new NullApiTokenException();
             try
             {
                 Users.Me();
@@ -187,7 +182,7 @@ namespace SnipeSharp
         {
         }
 
-        public SnipeItApi(IRestClient restClient): this(new RestSharpClient(restClient))
+        public SnipeItApi(IRestClient restClient): this(default(ISnipeItClient))
         {
         }
 

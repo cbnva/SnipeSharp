@@ -9,26 +9,6 @@ namespace SnipeSharp.Test
     public sealed class SnipeItApiTests
     {
         [Fact]
-        public void Init_MissingToken_ThrowsException()
-        {
-            Assert.Throws<NullApiTokenException>(() => {
-                var snipe = new SnipeItApi();
-                snipe.Uri = TEST_URI;
-                snipe.TestConnection();
-            });
-        }
-
-        [Fact]
-        public void Init_MissingURI_ThrowsException()
-        {
-            Assert.Throws<NullApiUriException>(() => {
-                var snipe = new SnipeItApi();
-                snipe.Token = TEST_TOKEN;
-                snipe.TestConnection();
-            });
-        }
-
-        [Fact]
         public void TestConnection_Successful()
         {
             var snipe = new SnipeItApi
