@@ -13,7 +13,7 @@ namespace SnipeSharp.Models
         public int Id { get; }
 
         [DeserializeAs(Static.NAME)]
-        [SerializeAs(Static.NAME, CanPatch = true)]
+        [SerializeAs(Static.NAME, IsRequired = true, CanPatch = true)]
         public string Name { get; }
 
         [DeserializeAs(Static.IMAGE)]
