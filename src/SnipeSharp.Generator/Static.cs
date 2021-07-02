@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using Microsoft.CodeAnalysis;
 
 namespace SnipeSharp.Generator
 {
@@ -28,7 +29,12 @@ namespace SnipeSharp.Generator
         internal const string SerializeAsStringAttributeFullName = Namespace + "." + SerializeAsStringAttribute;
 
         internal const string EnumMemberAttributeFullName = "System.Runtime.Serialization." + nameof(EnumMemberAttribute);
+        internal const string JsonPropertyNameAttributeFullName = "System.Text.Json.Serialization.JsonPropertyNameAttribute";
         internal const string IApiObjectFullName = "SnipeSharp.IApiObject";
         internal const string NullableBoolFullName = "System.Nullable";
+
+        internal const string SerializeAsAttributeFullName = "SnipeSharp.Serialization.SerializeAsAttribute";
+        internal const string GeneratePostableAttributeFullName = "SnipeSharp.Serialization.GeneratePostableAttribute";
+        internal const string ExtendsPostableAttributeFullName = "SnipeSharp.Serialization.ExtendsPostableAttribute";
     }
 }

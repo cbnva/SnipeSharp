@@ -7,13 +7,13 @@ using SnipeSharp.Serialization;
 namespace SnipeSharp.Models
 {
     [JsonConverter(typeof(CompanyConverter))]
-    [GeneratePartial, GenerateConverter]
+    [GeneratePartial, GenerateConverter, GeneratePostable]
     public sealed partial class Company: IApiObject<Company>
     {
         [DeserializeAs(Static.ID)]
         public int Id { get; }
 
-        [DeserializeAs(Static.NAME)]
+        [DeserializeAs(Static.NAME), SerializeAs(Static.NAME, IsRequired = true, CanPatch = true)]
         public string Name { get; }
 
         [DeserializeAs(Static.IMAGE)]
@@ -107,31 +107,5 @@ namespace SnipeSharp.Models
 
         [EnumMember(Value = Static.Count.CONSUMABLES)]
         ConsumablesCount
-    }
-
-    public sealed class CompanyProperty: IPutable<Company>, IPostable<Company>, IPatchable<Company>
-    {
-        [JsonPropertyName(Static.NAME)]
-        public string Name
-        {
-            get => _name;
-            set => _name = !string.IsNullOrEmpty(value) ? value : throw new ArgumentException(Static.Error.VALUE_EMPTY);
-        }
-        private string _name = string.Empty;
-
-        public CompanyProperty(string name)
-            => Name = name;
-
-        IToPatch<Company> IPatchable<Company>.GetPatchable(Company main)
-            => new CompanyPatch { Name = Name == main.Name ? null : Name };
-
-        public static explicit operator CompanyProperty(Company company)
-            => new CompanyProperty(company.Name);
-    }
-
-    internal sealed class CompanyPatch: IToPatch<Company>
-    {
-        [JsonPropertyName(Static.NAME)]
-        public string? Name { get; init; }
     }
 }

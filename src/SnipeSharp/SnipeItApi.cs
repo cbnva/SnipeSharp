@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using SnipeSharp.Client;
 using SnipeSharp.Exceptions;
+using SnipeSharp.Models;
 
 namespace SnipeSharp
 {
@@ -49,10 +50,11 @@ namespace SnipeSharp
             // normal endpoints
             _endpoints = new Dictionary<Type, object>
             {
-                //[typeof(Models.Accessory)] = Accessories = new AccessoryEndPoint(this),
+                [typeof(Models.Accessory)] = Accessories = new AccessoryEndPoint(this),
                 [typeof(Models.Asset)] = Assets = new AssetEndPoint(this),
-                //[typeof(Models.Category)] = Categories = new CategoryEndPoint(this),
+                [typeof(Models.Category)] = Categories = new CategoryEndPoint(this),
                 [typeof(Models.Company)] = Companies = new CompanyEndPoint(this),
+                [typeof(Models.Component)] = Components = new ComponentEndPoint(this),
                 //[typeof(Models.Consumable)] = Consumables = new ConsumableEndPoint(this),
                 //[typeof(Models.Department)] = Departments = new DepartmentEndPoint(this),
                 [typeof(Models.Depreciation)] = Depreciations = new DepreciationEndPoint(this),
@@ -100,10 +102,11 @@ namespace SnipeSharp
         public EndPoint<T> GetEndPoint<T>() where T: class, IApiObject<T>
             => _endpoints[typeof(T)] as EndPoint<T> ?? throw new InvalidCastException();
 
-        //public readonly AccessoryEndPoint Accessories;
+        public readonly AccessoryEndPoint Accessories;
         public readonly AssetEndPoint Assets;
-        //public readonly CategoryEndPoint Categories;
+        public readonly CategoryEndPoint Categories;
         public readonly CompanyEndPoint Companies;
+        public readonly ComponentEndPoint Components;
         //public readonly ConsumableEndPoint Consumables;
         //public readonly DepartmentEndPoint Departments;
         public readonly DepreciationEndPoint Depreciations;
@@ -116,5 +119,47 @@ namespace SnipeSharp
         public readonly UserEndPoint Users;
         public readonly StatusLabelEndPoint StatusLabels;
         public readonly SupplierEndPoint Suppliers;
+    }
+
+    internal static class SnipeItApiExtensions
+    {
+        public static async Task<DataTable<K>?> FindAsync<K>(this SnipeItApi api, string baseUri, IFilter<K> filter)
+            where K: class, IApiObject<K>
+        {
+            // duplicate the filter so if we change properties the original isn't affected.
+            filter = filter.Clone();
+
+            // get initial batch
+            var result = await api.Client.Get<DataTable<K>>($"{baseUri}?{filter.GetParameters().AsQueryParameters()}");
+            if(null == result)
+                return null;
+            var baseOffset = filter.Offset ?? 0;
+            // if we already have what we need, leave.
+            if(null != filter.Limit || baseOffset + result.Count >= result.Total)
+                return result;
+
+            // otherwise, get subsequent batches.
+            filter.Limit = null; // use limit hard-coded in request URI
+            filter.Offset = null; // use offset variable below, encoded directly into request URI
+            var offset = baseOffset + result.Count;// start here.
+            var parameters = filter.GetParameters().AsQueryParameters();
+            if(parameters.Length > 0)
+                parameters = "&" + parameters;
+            while(baseOffset + result.Count < result.Total)
+            {
+                var batch = await api.Client.Get<DataTable<K>>($"{baseUri}?limit=1000&offset={offset}{parameters}");
+                // these shouldn't happen -- if it did, something went wrong.
+                if(null == batch)
+                    throw new ApiNullException();
+                if(0 == batch.Count)
+                    throw new ApiReturnedInsufficientValuesForRequestException();
+
+                // add the batch to the ongoing result and increase offset.
+                result.Value.AddRange(batch.Value);
+                offset += batch.Count;
+            }
+
+            return result;
+        }
     }
 }

@@ -9,10 +9,7 @@ namespace SnipeSharp.Generator
     public sealed class SortColumnExtensionGenerator : ISourceGenerator
     {
         public void Initialize(GeneratorInitializationContext context)
-        {
-            context.RegisterForPostInitialization(ctx => ctx.AddSource("SerializationAttributes", SERIALIZATION_ATTRIBUTES));
-            context.RegisterForSyntaxNotifications(() => new SortColumnSyntaxReceiver());
-        }
+            => context.RegisterForSyntaxNotifications(() => new SortColumnSyntaxReceiver());
 
         public void Execute(GeneratorExecutionContext context)
         {
@@ -43,32 +40,5 @@ namespace {sortEnum.Namespace}
                 context.AddSource($"{sortEnum.Name}_generated", SourceText.From(builder.ToString(), Encoding.UTF8));
             }
         }
-
-        private const string SERIALIZATION_ATTRIBUTES = $@"
-using System;
-
-namespace {Static.Namespace}
-{{
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
-    internal sealed class {Static.DeserializeAsAttribute}: Attribute
-    {{
-        public string Key {{ get; }}
-
-        public Type? Type {{ get; set; }}
-
-        public bool IsNonNullable {{ get; set; }}
-
-        public {Static.DeserializeAsAttribute}(string key)
-        {{
-            Key = key;
-        }}
-    }}
-
-    [AttributeUsage(AttributeTargets.Enum, Inherited = false, AllowMultiple = false)]
-    internal sealed class {Static.SortColumnAttribute}: Attribute
-    {{
-    }}
-}}
-";
     }
 }

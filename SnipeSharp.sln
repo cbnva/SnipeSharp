@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnipeSharp.Test2", "test\Sn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnipeSharp.Generator", "src\SnipeSharp.Generator\SnipeSharp.Generator.csproj", "{873E2F89-9148-4384-849D-90C647224DD0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnipeSharp.PowerShell", "src\SnipeSharp.PowerShell\SnipeSharp.PowerShell.csproj", "{F35BD21E-4C62-4FC6-8DCE-A8943C583094}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnipeSharp.PowerShell.Generator", "src\SnipeSharp.PowerShell.Generator\SnipeSharp.PowerShell.Generator.csproj", "{39391359-73D0-4D60-A07E-5D7D0C883677}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,14 @@ Global
 		{873E2F89-9148-4384-849D-90C647224DD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{873E2F89-9148-4384-849D-90C647224DD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{873E2F89-9148-4384-849D-90C647224DD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F35BD21E-4C62-4FC6-8DCE-A8943C583094}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F35BD21E-4C62-4FC6-8DCE-A8943C583094}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F35BD21E-4C62-4FC6-8DCE-A8943C583094}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F35BD21E-4C62-4FC6-8DCE-A8943C583094}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39391359-73D0-4D60-A07E-5D7D0C883677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39391359-73D0-4D60-A07E-5D7D0C883677}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39391359-73D0-4D60-A07E-5D7D0C883677}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39391359-73D0-4D60-A07E-5D7D0C883677}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,5 +79,7 @@ Global
 		{660DB0D9-684C-4007-82F6-0C1F912B49DE} = {69D26340-09C0-4E28-BAE8-98D66F977A89}
 		{9D7C6A72-6629-4FA7-96F8-AB7BF04365CD} = {A0A21BB8-F445-4785-B55C-09DF4E4AEAD7}
 		{873E2F89-9148-4384-849D-90C647224DD0} = {69D26340-09C0-4E28-BAE8-98D66F977A89}
+		{F35BD21E-4C62-4FC6-8DCE-A8943C583094} = {69D26340-09C0-4E28-BAE8-98D66F977A89}
+		{39391359-73D0-4D60-A07E-5D7D0C883677} = {69D26340-09C0-4E28-BAE8-98D66F977A89}
 	EndGlobalSection
 EndGlobal

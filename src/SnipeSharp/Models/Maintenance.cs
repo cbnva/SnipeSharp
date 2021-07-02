@@ -6,14 +6,31 @@ using SnipeSharp.Serialization;
 namespace SnipeSharp.Models
 {
     [JsonConverter(typeof(MaintenanceConverter))]
-    [GeneratePartial, GenerateConverter]
+    [GeneratePartial, GenerateConverter, GeneratePostable]
     public sealed partial class Maintenance: IApiObject<Maintenance>
     {
         [DeserializeAs(Static.ID)]
         public int Id { get; }
 
         [DeserializeAs(Static.Types.ASSET)]
+        [SerializeAs(Static.Id.ASSET, Type = typeof(IApiObject<Asset>), IsRequired = true, CanPatch = true)]
         public StubAsset Asset { get; }
+
+        [DeserializeAs(Static.Types.SUPPLIER)]
+        [SerializeAs(Static.Id.SUPPLIER, Type = typeof(IApiObject<Supplier>), IsRequired = true, CanPatch = true)]
+        public Stub<Supplier> Supplier { get; }
+
+        [DeserializeAs(Static.Maintenance.ASSET_MAINTENANCE_TYPE)]
+        [SerializeAs(Static.Maintenance.ASSET_MAINTENANCE_TYPE, IsRequired = true, CanPatch = true)]
+        public AssetMaintenanceType MaintenanceType { get; }
+
+        [DeserializeAs(Static.TITLE)]
+        [SerializeAs(Static.TITLE, IsRequired = true, CanPatch = true)]
+        public string Title { get; }
+
+        [DeserializeAs(Static.Maintenance.START_DATE)]
+        [SerializeAs(Static.Maintenance.START_DATE, IsRequired = true, CanPatch = true)]
+        public FormattedDate StartDate { get; }
 
         [DeserializeAs(Static.Types.MODEL)]
         public Stub<Model>? Model { get; }
@@ -21,31 +38,22 @@ namespace SnipeSharp.Models
         [DeserializeAs(Static.Types.COMPANY)]
         public Stub<Company>? Company { get; }
 
-        [DeserializeAs(Static.TITLE)]
-        public string Title { get; }
 
         [DeserializeAs(Static.Types.LOCATION)]
         public Stub<Location>? Location { get; }
 
-        [DeserializeAs(Static.NOTES)]
+        [DeserializeAs(Static.NOTES), SerializeAs(Static.NOTES, CanPatch = true)]
         public string? Notes { get; }
 
-        [DeserializeAs(Static.Types.SUPPLIER)]
-        public Stub<Supplier> Supplier { get; }
-
-        [DeserializeAs(Static.COST)]
+        [DeserializeAs(Static.COST), SerializeAs(Static.COST, CanPatch = true)]
         public decimal? Cost { get; }
 
-        [DeserializeAs(Static.Maintenance.ASSET_MAINTENANCE_TYPE)]
-        public AssetMaintenanceType MaintenanceType { get; }
 
         [DeserializeAs(Static.Maintenance.ASSET_MAINTENANCE_TIME, Type = typeof(int))]
         public TimeSpan? MaintenanceDuration { get; }
 
-        [DeserializeAs(Static.Maintenance.START_DATE)]
-        public FormattedDate StartDate { get; }
-
         [DeserializeAs(Static.Maintenance.COMPLETION_DATE)]
+        [SerializeAs(Static.Maintenance.COMPLETION_DATE, CanPatch = true)]
         public FormattedDate? CompletionDate { get; }
 
         [DeserializeAs(Static.Types.USER)]
@@ -160,98 +168,11 @@ namespace SnipeSharp.Models
         HardwareSupport,
     }
 
-    public sealed class MaintenanceProperty: IPutable<Maintenance>, IPostable<Maintenance>, IPatchable<Maintenance>
+    [ExtendsPostable(typeof(Maintenance))]
+    public sealed partial class MaintenanceProperty: IPutable<Maintenance>, IPostable<Maintenance>, IPatchable<Maintenance>
     {
-        [JsonPropertyName(Static.Id.ASSET)]
-        public IApiObject<Asset> Asset { get; set; }
-
-        [JsonPropertyName(Static.Id.SUPPLIER)]
-        public IApiObject<Supplier> Supplier { get; set; }
-
-        [JsonPropertyName(Static.Maintenance.ASSET_MAINTENANCE_TYPE)]
-        public AssetMaintenanceType MaintenanceType { get; set; }
-
-        [JsonPropertyName(Static.TITLE)]
-        public string Title { get; set; }
-
-        [JsonPropertyName(Static.Maintenance.START_DATE)]
-        public DateTime StartDate { get; set; }
-
-        [JsonPropertyName(Static.Maintenance.COMPLETION_DATE)]
-        public DateTime? CompletionDate { get; set; }
-
         [JsonPropertyName(Static.Maintenance.IS_WARRANTY)]
+        [SerializeAs(Static.Maintenance.IS_WARRANTY, CanPatch = true)]
         public bool? IsWarranty { get; set; }
-
-        [JsonPropertyName(Static.COST)]
-        public decimal? Cost { get; set; }
-
-        [JsonPropertyName(Static.NOTES)]
-        public string? Notes { get; set; }
-
-        public MaintenanceProperty(IApiObject<Asset> asset, IApiObject<Supplier> supplier, AssetMaintenanceType maintenanceType, string title, DateTime startDate)
-        {
-            Asset = asset;
-            Supplier = supplier;
-            MaintenanceType = maintenanceType;
-            Title = title;
-            StartDate = startDate;
-        }
-
-        IToPatch<Maintenance> IPatchable<Maintenance>.GetPatchable(Maintenance main)
-            => new MaintenancePatch
-            {
-                Asset = Asset.Id == main.Asset.Id ? null : Asset,
-                Supplier = Supplier.Id == main.Supplier.Id ? null : Supplier,
-                MaintenanceType = MaintenanceType == main.MaintenanceType ? null : MaintenanceType,
-                Title = Title == main.Title ? null : Title,
-                StartDate = StartDate == main.StartDate ? null : StartDate,
-                CompletionDate = CompletionDate == main.CompletionDate?.Date ? null : CompletionDate,
-                Cost = Cost == main.Cost ? null : Cost,
-                Notes = Notes == main.Notes ? null : Notes,
-            };
-
-        public static explicit operator MaintenanceProperty(Maintenance maintenance)
-            => new MaintenanceProperty(
-                asset: maintenance.Asset,
-                supplier: maintenance.Supplier,
-                maintenanceType: maintenance.MaintenanceType,
-                title: maintenance.Title,
-                startDate: maintenance.StartDate
-                ){
-                    CompletionDate = maintenance.CompletionDate?.Date,
-                    Cost = maintenance.Cost,
-                    Notes = maintenance.Notes,
-                };
-    }
-
-    internal sealed class MaintenancePatch: IToPatch<Maintenance>
-    {
-        [JsonPropertyName(Static.Id.ASSET)]
-        public IApiObject<Asset>? Asset { get; set; }
-
-        [JsonPropertyName(Static.Id.SUPPLIER)]
-        public IApiObject<Supplier>? Supplier { get; set; }
-
-        [JsonPropertyName(Static.Maintenance.ASSET_MAINTENANCE_TYPE)]
-        public AssetMaintenanceType? MaintenanceType { get; set; }
-
-        [JsonPropertyName(Static.TITLE)]
-        public string? Title { get; set; }
-
-        [JsonPropertyName(Static.Maintenance.START_DATE)]
-        public DateTime? StartDate { get; set; }
-
-        [JsonPropertyName(Static.Maintenance.COMPLETION_DATE)]
-        public DateTime? CompletionDate { get; set; }
-
-        [JsonPropertyName(Static.Maintenance.IS_WARRANTY)]
-        public bool? IsWarranty { get; set; }
-
-        [JsonPropertyName(Static.COST)]
-        public decimal? Cost { get; set; }
-
-        [JsonPropertyName(Static.NOTES)]
-        public string? Notes { get; set; }
     }
 }

@@ -8,20 +8,23 @@ namespace SnipeSharp.Generator
 {
     internal sealed class PartialTypeSyntaxReceiver : ISyntaxContextReceiver
     {
-        public Dictionary<string, PartialClass> PartialClasses { get; } = new Dictionary<string, PartialClass>();
+        public Dictionary<string, PartialType> PartialTypes { get; } = new Dictionary<string, PartialType>();
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
         {
-            if(context.Node is not ClassDeclarationSyntax syntax)
+            if(context.Node is not TypeDeclarationSyntax syntax)
+                return;
+            var isClass = syntax is ClassDeclarationSyntax;
+            if(!isClass && syntax is not StructDeclarationSyntax)
                 return;
             if(context.SemanticModel.GetDeclaredSymbol(syntax) is not INamedTypeSymbol symbol)
                 return;
             if(!symbol.TryGetAttribute(Static.GeneratePartialAttributeFullName, out var attr))
                 return;
-            PartialClasses[symbol.Name] = new PartialClass(symbol, attr);
+            PartialTypes[symbol.Name] = new PartialType(symbol, attr, isClass);
         }
     }
 
-    internal sealed class PartialClass
+    internal sealed class PartialType
     {
         public INamedTypeSymbol Symbol { get; }
 
@@ -29,15 +32,22 @@ namespace SnipeSharp.Generator
         public string Namespace => Symbol.ContainingNamespace.ToDisplayString();
         public string FullName => Symbol.ToDisplayString();
 
+        public string GenericArguments { get; }
+        public string GenericConstraints { get; }
+
+        public string TypeType { get; }
         public string Modifiers { get; }
 
         public List<PartialProperty> Properties { get; } = new List<PartialProperty>();
 
         public List<PartialActionStruct> ActionStructs { get; } = new List<PartialActionStruct>();
 
-        public PartialClass(INamedTypeSymbol symbol, AttributeData attr)
+        public PartialType(INamedTypeSymbol symbol, AttributeData attr, bool isClass)
         {
+            TypeType = isClass ? "sealed class" : "struct";
             Symbol = symbol;
+            GenericArguments = symbol.IsGenericType ? $"<{string.Join(", ", symbol.TypeParameters.Select(a => a.Name))}>" : "";
+            GenericConstraints = symbol.IsGenericType ? symbol.GetGenericTypeConstraints() : "";
 
             foreach(var member in symbol.GetMembers().Where(a => a is IPropertySymbol).Select(a => (IPropertySymbol)a))
                 if(member.TryGetAttribute(Static.DeserializeAsAttributeFullName, out var deserialize))

@@ -1,20 +1,24 @@
 using System;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 
 namespace SnipeSharp.Generator
 {
     internal static class Extensions
     {
-        internal static bool TryGetAttribute(this ISymbol symbol, ISymbol attribute, out AttributeData data)
+        internal static bool TryGetAnyGenericInterface(this INamedTypeSymbol symbol, string ifaceName, out ITypeSymbol genericTypeArgument)
         {
-            var a = symbol.GetAttributes().SingleOrDefault(a => a?.AttributeClass?.ToDisplayString() == attribute.ToDisplayString());
-            if(null == a)
+
+            var a = symbol.ToDisplayString().Split('<')[0] == ifaceName
+                    ? symbol
+                    : symbol.AllInterfaces.FirstOrDefault(a => a?.ToDisplayString().Split('<')[0] == ifaceName);
+            if(null == a || a.TypeArguments.Length < 1)
             {
-                data = default!;
+                genericTypeArgument = default!;
                 return false;
             }
-            data = a;
+            genericTypeArgument = a.TypeArguments[0];
             return true;
         }
 
@@ -54,22 +58,20 @@ namespace SnipeSharp.Generator
             return true;
         }
 
-        internal static string Nullable(this ITypeSymbol type, AttributeData data)
-        {
-            var name = type.ToDisplayString();
-            if(name.EndsWith("?"))
-                return name;
-            if(!data.TryGetOption("IsNonNullable", out var opt))
-                return name + "?";
-            if(opt.Value is bool b && !b)
-                return name + "?";
-            return name;
-        }
-
         internal static string Nullable(this ITypeSymbol type)
         {
             return type.ToDisplayString() + "?";
         }
+
+        internal static string Nullable(this string type)
+        {
+            if(type.EndsWith("?"))
+                return type;
+            return type + "?";
+        }
+
+        internal static string FirstToLower(this string str)
+            => str.Substring(0, 1).ToLowerInvariant() + str.Substring(1);
 
         internal static string AsString(this Accessibility accessibility)
             => accessibility switch
@@ -83,7 +85,51 @@ namespace SnipeSharp.Generator
                 _ => throw new ArgumentException($"Unsupported accessibility type {accessibility}")
             };
 
-        internal static string Quote(this string constant)
-            => $"\"{constant}\"";
+        internal static string GetGenericTypeConstraints(this INamedTypeSymbol symbol)
+        {
+            var builder = new StringBuilder();
+            foreach(var typeParameter in symbol.TypeParameters)
+            {
+                if(typeParameter.ConstraintTypes.Any()
+                    || typeParameter.HasConstructorConstraint
+                    || typeParameter.HasNotNullConstraint
+                    || typeParameter.HasReferenceTypeConstraint
+                    || typeParameter.HasUnmanagedTypeConstraint
+                    || typeParameter.HasValueTypeConstraint)
+                {
+                    builder.Append(" where ").Append(typeParameter.Name).Append(" : ");
+                    var separator = "";
+                    if(typeParameter.HasReferenceTypeConstraint)
+                    {
+                        builder.Append(separator).Append("class");
+                        separator = ", ";
+                    }
+                    if(typeParameter.HasNotNullConstraint)
+                    {
+                        builder.Append(separator).Append("notnull");
+                        separator = ", ";
+                    }
+                    if(typeParameter.HasUnmanagedTypeConstraint)
+                    {
+                        builder.Append(separator).Append("unmanaged");
+                        separator = ", ";
+                    }
+                    if(typeParameter.HasValueTypeConstraint)
+                    {
+                        builder.Append(separator).Append("value");
+                        separator = ", ";
+                    }
+                    foreach(var constraintType in typeParameter.ConstraintTypes)
+                    {
+                        builder.Append(separator).Append(constraintType.ToDisplayString());
+                        separator = ", ";
+                    }
+
+                    if(typeParameter.HasConstructorConstraint)
+                        builder.Append("separator").Append("new()");
+                }
+            }
+            return builder.ToString();
+        }
     }
 }

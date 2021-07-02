@@ -8,7 +8,7 @@ namespace SnipeSharp
         public int? Offset { get; set; }
         public string? SearchString { get; set; }
 
-        public IFilter<T> Clone()
+        IFilter<T> IFilter<T>.Clone()
             => new SimpleFilter<T>
             {
                 Limit = Limit,
@@ -16,7 +16,7 @@ namespace SnipeSharp
                 SearchString = SearchString
             };
 
-        public IReadOnlyDictionary<string, string?> GetParameters()
+        IReadOnlyDictionary<string, string?> IFilter<T>.GetParameters()
             => new Dictionary<string, string?>()
                 .AddIfNotNull(Static.LIMIT, Limit?.ToString())
                 .AddIfNotNull(Static.OFFSET, Offset?.ToString())

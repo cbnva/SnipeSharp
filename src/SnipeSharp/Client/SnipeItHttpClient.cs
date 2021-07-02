@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -22,6 +21,12 @@ namespace SnipeSharp.Client
         }
         public SnipeItHttpClient(HttpClient client, Uri uri, string token)
         {
+            if(null == client)
+                throw new ArgumentNullException(nameof(client));
+            if(null == uri)
+                throw new ArgumentNullException(nameof(uri));
+            if(null == token)
+                throw new ArgumentNullException(nameof(token));
             this.Uri = uri.ToString().EndsWith("/") ? uri : new Uri($"{uri}/");
             this.client = client;
             this.client.BaseAddress = this.Uri;
@@ -57,7 +62,7 @@ namespace SnipeSharp.Client
 
         private async Task<SimpleApiResult?> ProcessApiResponse(HttpResponseMessage message)
             => new SimpleApiResult(await ProcessApiResponse<object>(message));
-        
+
         private async Task<ApiResult<R>?> ProcessApiResponse<R>(HttpResponseMessage message)
             where R: class?
         {

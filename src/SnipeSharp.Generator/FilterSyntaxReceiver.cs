@@ -31,6 +31,7 @@ namespace SnipeSharp.Generator
         public string Modifier { get; }
 
         public List<FilterProperty> Properties = new List<FilterProperty>();
+        public List<FilterProperty> GeneratedProperties = new List<FilterProperty>();
 
         public FilterDefinition(INamedTypeSymbol symbol, AttributeData attr)
         {
@@ -42,10 +43,15 @@ namespace SnipeSharp.Generator
             {
                 HasSearchString = true;
                 Properties.Add(FilterProperty.SearchString);
+                GeneratedProperties.Add(FilterProperty.SearchString);
             }
 
             if(attr.TryGetOption(0, out var columnType) && columnType.Value is INamedTypeSymbol s)
-                Properties.Add(new FilterProperty("sort", s.Nullable(), "SortOn", "SortOn?.Serialize()"));
+            {
+                var property = new FilterProperty("sort", s.Nullable(), "SortOn", "SortOn?.Serialize()");
+                Properties.Add(property);
+                GeneratedProperties.Add(property);
+            }
 
             foreach(var member in symbol.GetMembers())
             {
@@ -73,6 +79,7 @@ namespace SnipeSharp.Generator
                     property.ConvertWith = member.Name;
                 else
                     property.ConvertWith = $"{member.Name}?.ToString()";
+                Properties.Add(property);
             }
         }
     }

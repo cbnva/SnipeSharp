@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using SnipeSharp.Models;
+using SnipeSharp.Serialization;
+using System.Runtime.Serialization;
 
 namespace SnipeSharp
 {
@@ -18,25 +20,17 @@ namespace SnipeSharp
             var joiner = new StringJoiner("&");
             if(null != search)
                 joiner.Append($"search={Uri.EscapeUriString(search)}");
-            var serializedStatusType = statusType.Serialize();
+            var serializedStatusType = statusType?.Serialize();
             if(null != serializedStatusType)
                 joiner.Append($"assetStatusType={Uri.EscapeUriString(serializedStatusType)}");
             return Api.Client.Get<SelectList<Asset>>($"{BaseUri}/selectlist{(joiner.JoinedItemsCount > 0 ? "?" : string.Empty)}{joiner}");
         }
     }
 
+    [SortColumn]
     public enum SelectAssetStatusType
     {
+        [EnumMember(Value = "RTD")]
         ReadyToDeploy
-    }
-
-    internal static class SelectAssetStatusTypeExtensions
-    {
-        internal static string? Serialize(this SelectAssetStatusType? self)
-            => self switch
-            {
-                SelectAssetStatusType.ReadyToDeploy => "RTD",
-                _ => null
-            };
     }
 }

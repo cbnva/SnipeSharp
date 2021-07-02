@@ -8,16 +8,18 @@ using SnipeSharp.Serialization;
 namespace SnipeSharp.Models
 {
     [JsonConverter(typeof(DepreciationConverter))]
-    [GeneratePartial, GenerateConverter]
+    [GeneratePartial, GenerateConverter, GeneratePostable]
     public sealed partial class Depreciation : IApiObject<Depreciation>
     {
         [DeserializeAs(Static.ID)]
         public int Id { get; }
 
         [DeserializeAs(Static.NAME)]
+        [SerializeAs(Static.NAME, IsRequired = true, CanPatch = true)]
         public string Name { get; }
 
         [DeserializeAs(Static.Depreciation.MONTHS, Type = typeof(string))]
+        [SerializeAs(Static.Depreciation.MONTHS, CanPatch = true)]
         public int Months { get; }
 
         [DeserializeAs(Static.CREATED_AT)]
@@ -75,60 +77,9 @@ namespace SnipeSharp.Models
         Name
     }
 
-    public sealed class DepreciationProperty: IPutable<Depreciation>, IPostable<Depreciation>
+    public sealed partial class DepreciationProperty: IPutable<Depreciation>, IPostable<Depreciation>, IPatchable<Depreciation>
     {
-        [JsonPropertyName(Static.NAME)]
-        public string Name
-        {
-            get => _name;
-            set => _name = !string.IsNullOrEmpty(value) ? value : throw new ArgumentException(Static.Error.VALUE_EMPTY);
-        }
-        private string _name = string.Empty;
-
-        [JsonPropertyName(Static.Depreciation.MONTHS)]
-        public int Months { get; set; }
-
-        public DepreciationProperty(string name)
-            => Name = name;
         public DepreciationProperty(string name, int months): this(name)
             => Months = months;
-
-        public static explicit operator DepreciationProperty(Depreciation depreciation)
-            => new DepreciationProperty(depreciation.Name, depreciation.Months);
-
-        public static explicit operator DepreciationProperty(DepreciationPatch patch)
-            => new DepreciationProperty(
-                name: patch.Name ?? throw new ArgumentNullException(nameof(Name)),
-                months: patch.Months ?? throw new ArgumentNullException(nameof(Months))
-            );
-    }
-
-    public sealed class DepreciationPatch : IPatchable<Depreciation>
-    {
-        public string? Name { get; set; }
-        public int? Months { get; set; }
-
-        IToPatch<Depreciation> IPatchable<Depreciation>.GetPatchable(Depreciation main)
-            => new DepreciationToPatch
-            {
-                Name = main.Name,
-                Months = main.Months
-            };
-
-        public static implicit operator DepreciationPatch(DepreciationProperty property)
-            => new DepreciationPatch
-            {
-                Name = property.Name,
-                Months = property.Months,
-            };
-    }
-
-    internal sealed class DepreciationToPatch: IToPatch<Depreciation>
-    {
-        [JsonPropertyName(Static.NAME)]
-        public string? Name { get; set; }
-
-        [JsonPropertyName(Static.Depreciation.MONTHS)]
-        public int? Months { get; set; }
     }
 }

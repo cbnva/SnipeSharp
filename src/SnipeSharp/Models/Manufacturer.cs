@@ -6,28 +6,34 @@ using SnipeSharp.Serialization;
 namespace SnipeSharp.Models
 {
     [JsonConverter(typeof(ManufacturerConverter))]
-    [GeneratePartial, GenerateConverter]
+    [GeneratePartial, GenerateConverter, GeneratePostable]
     public sealed partial class Manufacturer: IApiObject<Manufacturer>
     {
         [DeserializeAs(Static.ID)]
         public int Id { get; }
 
         [DeserializeAs(Static.NAME)]
+        [SerializeAs(Static.NAME, IsRequired = true, CanPatch = true)]
         public string Name { get; }
 
         [DeserializeAs(Static.URL)]
+        [SerializeAs(Static.URL, CanPatch = true)]
         public Uri? Url { get; }
 
         [DeserializeAs(Static.IMAGE)]
+        [SerializeAs(Static.IMAGE, CanPatch = true)]
         public Uri? Image { get; }
 
         [DeserializeAs(Static.Manufacturer.SUPPORT_URL)]
+        [SerializeAs(Static.Manufacturer.SUPPORT_URL, CanPatch = true)]
         public Uri? SupportUrl { get; }
 
         [DeserializeAs(Static.Manufacturer.SUPPORT_PHONE)]
+        [SerializeAs(Static.Manufacturer.SUPPORT_PHONE, CanPatch = true)]
         public string? SupportPhone { get; }
 
         [DeserializeAs(Static.Manufacturer.SUPPORT_EMAIL)]
+        [SerializeAs(Static.Manufacturer.SUPPORT_EMAIL, CanPatch = true)]
         public string? SupportEmail { get; }
 
         [DeserializeAs(Static.Count.ACCESSORIES, IsNonNullable = true)]
@@ -129,57 +135,5 @@ namespace SnipeSharp.Models
 
         [EnumMember(Value = Static.Count.LICENSES)]
         LicensesCount,
-    }
-
-    public sealed class ManufacturerProperty: IPostable<Manufacturer>, IPutable<Manufacturer>, IPatchable<Manufacturer>
-    {
-        private string _name = string.Empty;
-        public string Name
-        {
-            get => _name;
-            set => _name = !string.IsNullOrEmpty(value)
-                ? value
-                : throw new ArgumentException(Static.Error.VALUE_EMPTY, paramName: nameof(Name));
-        }
-
-        public Uri? Url { get; set; }
-        public Uri? Image { get; set; }
-        public Uri? SupportUrl { get; set; }
-        public string? SupportPhone { get; set; }
-        public string? SupportEmail { get; set; }
-
-        public ManufacturerProperty(string name)
-            => Name = name;
-
-        IToPatch<Manufacturer> IPatchable<Manufacturer>.GetPatchable(Manufacturer main)
-            => new ManufacturerPatch
-            {
-                Name = Name == main.Name ? null : Name,
-                Url = Url == main.Url ? null : Url,
-                Image = Image == main.Image ? null : Image,
-                SupportUrl = SupportUrl == main.SupportUrl ? null : SupportUrl,
-                SupportPhone = SupportPhone == main.SupportPhone ? null : SupportPhone,
-                SupportEmail = SupportEmail == main.SupportEmail ? null : SupportEmail,
-            };
-
-        public static explicit operator ManufacturerProperty(Manufacturer manufacturer)
-            => new ManufacturerProperty(manufacturer.Name)
-            {
-                Url = manufacturer.Url,
-                Image = manufacturer.Image,
-                SupportUrl = manufacturer.SupportUrl,
-                SupportPhone = manufacturer.SupportPhone,
-                SupportEmail = manufacturer.SupportEmail,
-            };
-    }
-
-    internal sealed class ManufacturerPatch: IToPatch<Manufacturer>
-    {
-        public string? Name { get; set; }
-        public Uri? Url { get; set; }
-        public Uri? Image { get; set; }
-        public Uri? SupportUrl { get; set; }
-        public string? SupportPhone { get; set; }
-        public string? SupportEmail { get; set; }
     }
 }

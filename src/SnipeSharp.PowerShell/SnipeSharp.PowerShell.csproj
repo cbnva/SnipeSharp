@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net5</TargetFrameworks>
+    <OutputType>library</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>preview</LangVersion>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Nullable>enable</Nullable>
+    <NoWarn>CS1591;CS1574</NoWarn> <!-- for now, disable missing documentation warnings -->
+
+    <EmitCompilerGeneratedFiles Condition="'$(Configuration)'=='DEBUG'">true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PowerShellStandard.Library" Version="5.1.0" />
+
+    <ProjectReference Include="../SnipeSharp/SnipeSharp.csproj" />
+    <None Update="$(AssemblyName).psd1;$(AssemblyName)*.ps1xml" CopyToOutputDirectory="PreserveNewest" />
+
+    <ProjectReference Include="../SnipeSharp.PowerShell.Generator/SnipeSharp.PowerShell.Generator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false" />
+  </ItemGroup>
+</Project>

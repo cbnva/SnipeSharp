@@ -4,9 +4,9 @@ using SnipeSharp.Models;
 
 namespace SnipeSharp
 {
-    public sealed class CompanyEndPoint: EndPoint<Company>
+    public sealed class CategoryEndPoint: EndPoint<Category>
     {
-        internal CompanyEndPoint(SnipeItApi api): base(api, "companies"){}
+        internal CategoryEndPoint(SnipeItApi api): base(api, "categories"){}
 
         public Task<SelectList<Company>?> SelectAsync(string? search = null)
             => Api.Client.Get<SelectList<Company>>($"{BaseUri}/selectlist{((null == search) ? "" : $"?search={Uri.EscapeUriString(search)}")}");

@@ -22,7 +22,6 @@
         | `order`           | `asc | *` (`desc`)
         | `sort`            | `category | company | id | name | model_number | eol | notes | created_at | min_amt | company_id` (`created_at`)
 
-    - [ ] GET /{id} (`AccessoriesController@show`) :: `Accessory`
     - [ ] POST (`AccessoriesController@store`) :: `StandardApiResponse<null | RawAccessory>`
 
         | param             | type
@@ -45,7 +44,6 @@
 
         Params same as post.
 
-    - [ ] DELETE /{id} (`AccessoriesController@destroy`) :: `StandardResponse<null>`
     - [ ] GET /{id}/checkedout (`AccessoriesController@checkedout`) -- [ ] appears twice
             :: `DataTable<CheckedOutAccessoryUser>` (can be none if not accessory users)
 
@@ -102,6 +100,35 @@
         Params same as POST.
 
     - [ ] DELETE /{id} (`CategoriesController@destroy`) :: `StandardApiResponse<null>`
+  - [ ] /companies
+    - [x] GET /selectlist (`CompaniesController@selectlist`) :: `SelectList`
+
+        | param    | type     |
+        |----------|----------|
+        | `search` | `string` |
+
+    - [ ] GET (`CompaniesController@index`) :: `DataTable<Company>`
+
+        | param    | type     |
+        |----------|----------|
+        | `search` | `string`
+        | `offset` | `int`
+        | `limit`  | `int`
+        | `order`  | `asc | *` (`desc`)
+        | `sort`   | `id | name | created_at | updated_at | users_count | assets_count | licenses_count | accessories_count | components_count | consumables_count` (`created_at`)
+
+    - [ ] GET /{id} (`CompaniesController@show`) :: `Company`
+    - [ ] POST (`CompaniesController@store`) :: `StandardApiResponse<null | RawCompany>`
+
+        | param  | type     |
+        |--------|----------|
+        | `name` | `string` |
+
+    - [ ] PUT /{id} (`CompaniesController@update`) :: `StandardApiResponse<null | RawCompany>`
+
+        Params same as POST.
+
+    - [ ] DELETE /{id} (`CompaniesController@destroy`) :: `StandardApiResponse<null>`
   - [ ] /departments
     - [ ] GET /selectlist (`DepartmentsController@selectlist`) :: `SelectList`
 
@@ -229,6 +256,30 @@
         | `note`        | `string` |
 
         There's something weird going on here with the `$data` variable -- it's populated, but never used.
+  - [ ] /depreciations
+    - [ ] GET (`DepreciationsController@index`) :: `DataTable<Depreciation>`
+
+        | param    | type     |
+        |----------|----------|
+        | `search` | `string`
+        | `offset` | `int`
+        | `limit`  | `int`
+        | `order`  | `asc | *` (`desc`)
+        | `sort`   | `id | name | created_at` (`created_at`)
+
+    - [ ] GET /{id} (`DepreciationsController@show`) :: `Depreciation`
+    - [ ] POST (`DepreciationsController@store`) :: `StandardApiResponse<null | RawDepreciation>`
+
+        | param    | type     |
+        |----------|----------|
+        | `name`   | `string` |
+        | `months` | `int`    |
+
+    - [ ] PUT /{id} (`DepreciationsController@update`) :: `StandardApiResponse<null | RawDepreciation>`
+
+        Params same as POST.
+
+    - [ ] DELETE /{id} (`DepreciationsController@destroy`) :: `StandardApiResponse<null>`
   - [ ] /fields
     - [ ] GET (`CustomFieldsController@index`) :: `DataTable<CustomField>` (all, no params)
     - [ ] GET /{id} (`CustomFieldsController@show`) :: `CustomField`
@@ -291,6 +342,7 @@
         | `order`  | `asc | *` (`desc`)
         | `sort`   | `id | name | created_at | updated_at` (`created_at`)
 
+    - [ ] GET /{id} (`GroupsController@show`) :: `Group`
     - [ ] POST (`GroupsController@store`) :: `StandardApiResponse<null | RawGroup>`
 
         TODO
@@ -298,8 +350,19 @@
     - [ ] PUT /{id} (`GroupsController@update`) :: `StandardApiResponse<null | RawGroup>`
 
         Params same as POST.
+
+    - [ ] DELETE /{id} (`GroupsController@destroy`) :: `StandardApiResponse<null>`
   - [ ] /hardware
     - [ ] GET /{id}/licenses (`AssetsController@licenses`) :: `DataTable<License>`
+    - [ ] GET /bytag/{tag} (`AssetsController@showByTag`) :: `Asset | StandardApiResponse<null>`
+    - [ ] GET /byserial/{any} (`AssetsController@showBySerial`) :: `DataTable<Asset> | StandardApiResponse<null>`
+    - [ ] GET /selectlist (`AssetsController@selectlist`):: `SelectList`
+
+        | param    | type     |
+        |----------|----------|
+        | `search` | `string` |
+        | `assetStatusType` | `RTD | *` (none)
+
     - [ ] GET /audit/{audit} (`AssetsController@index`) :: `DataTable<Asset>`
 
         Same params as GET /hardware, but with:
@@ -364,6 +427,7 @@
         | `search` | `string`
         | `sort`   | Any custom field database column name OR `id | name | asset_tag | serial | model_number | last_checkout | notes | expected_checkin | order_number | image | assigned_to | created_at | updated_at | purchase_date | purchase_cost | last_audit_date | next_audit_date | warranty_months | checkout_counter | checkin_counter | requests_counter | model | category | manufacturer | company | location | rtd_location | status_label | supplier | assigned_to` (`created_at`)
 
+    - [ ] GET /{id} (`AssetsController@show`) :: `Asset`
     - [ ] PUT /{id} (`AssetsController@update`) :: `StandardApiResponse<null | RawAsset>`
 
         TODO
@@ -392,6 +456,40 @@
         | `assigned_user`     | `int`
         | `asigned_asset`     | `int`
         | `assigned_location` | `int`
+
+    - [ ] DELETE /{id} (`AssetsController@destroy`) :: `StandardApiResponse<null>`
+  - [ ] /maintenances
+    - [ ] GET (`AssetMaintenancesController@index`) :: `DataTable<Maintenance>`
+
+        | param      | type
+        |------------|----------
+        | `search`   | `string`
+        | `asset_id` | `int`
+        | `offset`   | `int`
+        | `limit`    | `int`
+        | `order`    | `asc | *` (`desc`)
+        | `sort`     | `id | title | asset_maintenance_type | asset_maintenance_time | cost | start_date | completion_date | notes | asset_tag | asset_name | user_id`
+
+    - [ ] GET /{id} (`AssetMaintenancesController@show`) :: `StandardApiResponse<null> | Maintenance`
+    - [ ] POST (`AssetMaintenancesController@store`) :: `StandardApiResponse<null | RawMaintenance>`
+
+        | param                    | type
+        |--------------------------|------
+        | `supplier_id`            | `int`
+        | `is_warranty`            | `boolean`
+        | `cost`                   | `number`
+        | `notes`                  | `string`
+        | `asset_id`               | `int`
+        | `asset_maintenance_type` | TODO
+        | `title`                  | `string`
+        | `start_date`             | `date`
+        | `completion_date`        | `date`
+
+    - [ ] PUT /{id} (`AssetMaintenancesController@update`) :: `StandardApiResponse<null | RawMaintenance>`
+
+        Params same as POST.
+
+    - [ ] DELETE /{id} (`AssetMaintenancesController@destroy`) :: `StandardApiResponse<null>`
   - [ ] /imports
     - [ ] GET (`ImportController@index`) :: `Import[]`
     - [ ] GET /{id} (`ImportController@show`) -- missing in controller
@@ -477,6 +575,28 @@
         | param    | type     |
         |----------|----------|
         | `search` | `string` |
+  - [ ] /manufacturers
+    - [ ] GET /{id}/selectlist (`ManufacturersController@selectlist`) :: `SelectList`
+
+        | param    | type     |
+        |----------|----------|
+        | `search` | `string` |
+
+    - [ ] GET (`ManufacturersController@index`) :: `DataTable<Manufacturer>`
+
+        | param     | type
+        |-----------|------------------
+        | `deleted` | `true | *` (none)
+        | `search`  | `string`
+        | `offset`  | `int`
+        | `limit`   | `int`
+        | `order`   | `asc | *` (`desc`)
+        | `sort`    | `id|name|url|support_url|support_email|support_phone|created_at|updated_at|image|assets_count|consumables_count|components_count|licenses_count` (`created_at`)
+
+    - [ ] GET /{id} (`ManufacturersController@show`) :: `Manufacturer`
+    - [ ] PUT /{id} (`ManufacturersController@update`) TODO
+    - [ ] POST (`ManufacturersController@store`) TODO
+    - [ ] DELETE /{id} (`ManufacturersController@destroy`) :: `StandardApiResponse<null>`
   - [ ] /models
     - [ ] GET /selectlist (`AssetModelsController@selectlist`) :: `SelectList`
 
@@ -576,12 +696,39 @@
     - [ ] DELETE /{id} (`SuppliersController@destroy`) :: `StandardApiResponse<null>` TODO: extra messages
   - [ ] /users
     - [ ] POST /two_factor_reset (`UsersController@postTwoFactorReset`)
+    - [x] GET /me (`UsersController@getCurrentUserInfo`)
     - [ ] GET /list/{status?} (`UsersController@getDatatable`)
+    - [x] GET /selectlist (`UsersController@selectList`) :: `SelectList`
+
+        | param    | type     |
+        |----------|----------|
+        | `search` | `string` |
+
     - [x] GET /{id}/assets (`UsersController@assets`) :: `DataTable<Asset>`
     - [x] GET /{id}/licenses (`UsersController@licenses`) :: `DataTable<License>`
     - [ ] POST /{id}/upload (`UsersController@postUpload`) TODO
+    - [x] GET (`UsersController@index`) :: `DataTable<User>`
+
+        | param         | type
+        |---------------|------
+        | `deleted`     | `'true' | *` (`false`)
+        | `all`         | `'true' | *` (`false`) TODO -- bug where it checks `deleted` instead?
+        | `company_id`  | `int`
+        | `location_id` | `int`
+        | `email`       | `string`
+        | `username`    | `string`
+        | `group_id`    | `int`
+        | `department_id` | `int`
+        | `search`      | `string`
+        | `order`       | `asc | *` (`desc`)
+        | `offset`      | `int`
+        | `limit`       | `int`
+        | `sort`        | `manager|location|department|company|last_name|first_name|email|jobtitle|username|employee_num|assets|accessories|consumables|licenses|groups|activated|created_at|two_factor_enrolled|two_factor_optin|last_login|assets_count|licenses_count|consumables_count|accessories_count|phone|address|city|state|country|zip|id` (`first_name`)
+
+    - [x] GET /{id} (`UsersController@show`) :: `User`
     - [ ] PUT /{id} (`UsersController@update`) TODO
     - [ ] POST (`UsersController@store`) TODO
+    - [x] DELETE /{id} (`UsersController@destroy`) :: `StandardApiResponse<null>`
   - [ ] /reports
     - [ ] GET /activity (`ReportsController@index`) :: `DataTable<ActionLog>`
 

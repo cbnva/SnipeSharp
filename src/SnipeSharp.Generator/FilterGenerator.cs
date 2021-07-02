@@ -8,10 +8,7 @@ namespace SnipeSharp.Generator
     public sealed class FilterGenerator : ISourceGenerator
     {
         public void Initialize(GeneratorInitializationContext context)
-        {
-            context.RegisterForPostInitialization(ctx => ctx.AddSource("FilterAttributes", FILTER_ATTRIBUTES));
-            context.RegisterForSyntaxNotifications(() => new FilterSyntaxReceiver());
-        }
+            => context.RegisterForSyntaxNotifications(() => new FilterSyntaxReceiver());
 
         public void Execute(GeneratorExecutionContext context)
         {
@@ -32,8 +29,9 @@ namespace {filter.Symbol.ContainingNamespace.ToDisplayString()}
         public int? Offset {{ get; set; }}
         public SortOrder? SortOrder {{ get; set; }}
 ");
-                foreach(var property in filter.Properties)
-                    builder.Append($"public {property.Type} {property.Name} {{ get; set; }}\n");
+                foreach(var property in filter.GeneratedProperties)
+                    builder.Append($@"
+        public {property.Type} {property.Name} {{ get; set; }}");
                 foreach(var type in filter.FilterTypes)
                 {
                     builder.Append($@"
@@ -42,10 +40,10 @@ namespace {filter.Symbol.ContainingNamespace.ToDisplayString()}
             {{
                 Limit = Limit,
                 Offset = Offset,
-                SortOrder = SortOrder,
-");
+                SortOrder = SortOrder,");
                     foreach(var property in filter.Properties)
-                        builder.Append($"{property.Name} = {property.Name},\n");
+                        builder.Append($@"
+                {property.Name} = {property.Name},");
                     builder.Append($@"
             }};
 
@@ -53,53 +51,17 @@ namespace {filter.Symbol.ContainingNamespace.ToDisplayString()}
             => new Dictionary<string, string?>()
                 .AddIfNotNull(Static.LIMIT, Limit?.ToString())
                 .AddIfNotNull(Static.OFFSET, Offset?.ToString())
-                .AddIfNotNull(Static.ORDER, SortOrder?.Serialize())
-");
+                .AddIfNotNull(Static.ORDER, SortOrder?.Serialize())");
                     foreach(var property in filter.Properties)
-                        builder.Append($".AddIfNotNull(\"{property.Key}\", {property.ConvertWith})\n");
+                        builder.Append($@"
+                .AddIfNotNull(""{property.Key}"", {property.ConvertWith})");
                     builder.Append(";");
                 }
-                builder.Append("}}");
+                builder.Append(@"
+    }
+}");
                 context.AddSource(filter.Symbol.Name + "_generated", SourceText.From(builder.ToString(), Encoding.UTF8));
             }
         }
-
-
-        private const string FILTER_ATTRIBUTES = $@"
-using System;
-
-namespace {Static.Namespace}
-{{
-    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    internal sealed class {Static.GenerateFilterAttribute}: Attribute
-    {{
-        public Type? ColumnType {{ get; }}
-
-        public bool HasSearchString {{ get; set; }} = true;
-
-        public {Static.GenerateFilterAttribute}()
-        {{
-        }}
-
-        public {Static.GenerateFilterAttribute}(Type columnType)
-        {{
-            ColumnType = columnType;
-        }}
-    }}
-
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-    internal sealed class {Static.SerializeAsStringAttribute}: Attribute
-    {{
-        public string Key {{ get; set; }}
-
-        public string? With {{ get; set; }}
-
-        public {Static.SerializeAsStringAttribute}(string key)
-        {{
-            Key = key;
-        }}
-    }}
-}}
-";
     }
 }
