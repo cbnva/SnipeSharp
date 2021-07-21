@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using SnipeSharp.Client;
 using SnipeSharp.Exceptions;
@@ -8,28 +7,6 @@ using SnipeSharp.Models;
 
 namespace SnipeSharp
 {
-    public struct TestConnectionResult
-    {
-        public const HttpStatusCode GENERAL_ERROR = (HttpStatusCode)601;
-        public readonly HttpStatusCode Result;
-        internal TestConnectionResult(HttpStatusCode status)
-            => Result = status;
-
-        public static implicit operator bool(TestConnectionResult result)
-            => result.Result == HttpStatusCode.OK;
-        public static bool operator ==(TestConnectionResult a, TestConnectionResult b)
-            => a.Result == b.Result;
-        public static bool operator !=(TestConnectionResult a, TestConnectionResult b)
-            => a.Result != b.Result;
-        public override bool Equals(object? obj)
-            => obj is TestConnectionResult a ? a.Result == this.Result : false;
-        public override int GetHashCode()
-            => this.Result.GetHashCode();
-
-        public static TestConnectionResult OK { get; } = new TestConnectionResult(HttpStatusCode.OK);
-        public static TestConnectionResult ERROR { get; } = new TestConnectionResult(TestConnectionResult.GENERAL_ERROR);
-    }
-
     public sealed class SnipeItApi: IDisposable
     {
         public readonly ISnipeItClient Client;
@@ -55,8 +32,8 @@ namespace SnipeSharp
                 [typeof(Models.Category)] = Categories = new CategoryEndPoint(this),
                 [typeof(Models.Company)] = Companies = new CompanyEndPoint(this),
                 [typeof(Models.Component)] = Components = new ComponentEndPoint(this),
-                //[typeof(Models.Consumable)] = Consumables = new ConsumableEndPoint(this),
-                //[typeof(Models.Department)] = Departments = new DepartmentEndPoint(this),
+                [typeof(Models.Consumable)] = Consumables = new ConsumableEndPoint(this),
+                [typeof(Models.Department)] = Departments = new DepartmentEndPoint(this),
                 [typeof(Models.Depreciation)] = Depreciations = new DepreciationEndPoint(this),
                 //[typeof(Models.Field)] = Fields = new FieldEndPoint(this),
                 //[typeof(Models.FieldSet)] = FieldSets = new FieldSetEndPoint(this),
@@ -107,8 +84,8 @@ namespace SnipeSharp
         public readonly CategoryEndPoint Categories;
         public readonly CompanyEndPoint Companies;
         public readonly ComponentEndPoint Components;
-        //public readonly ConsumableEndPoint Consumables;
-        //public readonly DepartmentEndPoint Departments;
+        public readonly ConsumableEndPoint Consumables;
+        public readonly DepartmentEndPoint Departments;
         public readonly DepreciationEndPoint Depreciations;
         public readonly GroupEndPoint Groups;
         public readonly LicenseEndPoint Licenses;

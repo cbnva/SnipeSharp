@@ -31,7 +31,7 @@ namespace SnipeSharp.PowerShell
     {{
         [Parameter(Mandatory = true, ValueFromPipeline = true)]
         [ValidateNotNull]
-        public {target.BindingType} Identity {{ get; set; }}
+        public {target.BindingType}[] Identity {{ get; set; }}
 
         [Parameter]
         [ValidateNotNull]
@@ -44,7 +44,8 @@ namespace SnipeSharp.PowerShell
 
         protected override async Task ProcessRecordAsync()
         {{
-            WriteObject(await Client.{target.EndPointPropertyName}.GetAsync(Identity));
+            foreach(var obj in Identity)
+                WriteObject(await Client.{target.EndPointPropertyName}.GetAsync(obj));
         }}
     }}
 }}

@@ -8,32 +8,24 @@ namespace SnipeSharp.Test
     public sealed class SnipeItApiTest
     {
         [Fact]
-        public void TestConnection_Successful()
+        public async void TestConnection_Successful()
         {
             var snipe = new SnipeItApi(TEST_URI, TEST_TOKEN);
-            Assert.True(snipe.TestConnection().Result);
+            Assert.True(await snipe.TestConnection());
         }
 
         [Fact]
-        public void TestConnection_BadUri_Fails()
+        public async void TestConnection_BadUri_Fails()
         {
             var snipe = new SnipeItApi(new Uri("http://fake.localhost"), TEST_TOKEN);
-            Assert.False(snipe.TestConnection().Result);
+            Assert.False(await snipe.TestConnection());
         }
 
         [Fact]
-        public void TestConnection_BadToken_Fails()
+        public async void TestConnection_BadToken_Fails()
         {
             var snipe = new SnipeItApi(TEST_URI, string.Empty);
-            Assert.False(snipe.TestConnection().Result);
-        }
-
-        public static async void Test()
-        {
-            var snipe = new SnipeItApi(TEST_URI, TEST_TOKEN);
-            var mainSite = await snipe.Locations.GetAsync(1);
-            await foreach(var site in mainSite!.ChildLocations.ResolveAsync<Location>(snipe))
-                Console.WriteLine(site?.Name);
+            Assert.False(await snipe.TestConnection());
         }
     }
 }

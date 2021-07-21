@@ -19,7 +19,7 @@ namespace SnipeSharp.Models
         public string Name { get; }
 
         [DeserializeAs(Static.Depreciation.MONTHS, Type = typeof(string))]
-        [SerializeAs(Static.Depreciation.MONTHS, CanPatch = true)]
+        [SerializeAs(Static.Depreciation.MONTHS, IsRequired = true, CanPatch = true)]
         public int Months { get; }
 
         [DeserializeAs(Static.CREATED_AT)]
@@ -75,11 +75,5 @@ namespace SnipeSharp.Models
 
         [EnumMember(Value = Static.NAME)]
         Name
-    }
-
-    public sealed partial class DepreciationProperty: IPutable<Depreciation>, IPostable<Depreciation>, IPatchable<Depreciation>
-    {
-        public DepreciationProperty(string name, int months): this(name)
-            => Months = months;
     }
 }

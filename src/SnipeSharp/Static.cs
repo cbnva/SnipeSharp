@@ -65,6 +65,7 @@ namespace SnipeSharp
             internal const string GROUP = Types.GROUP + "_" + ID;
             internal const string LICENSE = Types.LICENSE + "_" + ID;
             internal const string LOCATION = Types.LOCATION + "_" + ID;
+            internal const string MANAGER = "manager_id";
             internal const string MANUFACTURER = Types.MANUFACTURER + "_" + ID;
             internal const string SUPPLIER = Types.SUPPLIER + "_" + ID;
             internal const string USER = Types.USER + "_" + ID;

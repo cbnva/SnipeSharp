@@ -19,12 +19,12 @@ namespace SnipeSharp
         public Task<T?> GetAsync(IApiObject<T> origin) => GetAsync(origin.Id);
         public Task<T?> GetAsync(int id) => Api.Client.Get<T>($"{BaseUri}/{id}");
 
-        public async IAsyncEnumerable<T?> GetAsync(IEnumerable<T> ids)
+        public async IAsyncEnumerable<T?> GetAllAsync(IEnumerable<IApiObject<T>> ids)
         {
             foreach(var id in ids)
                 yield return await GetAsync(id);
         }
-        public async IAsyncEnumerable<T?> GetAsync(IEnumerable<int> ids)
+        public async IAsyncEnumerable<T?> GetAllAsync(IEnumerable<int> ids)
         {
             foreach(var id in ids)
                 yield return await GetAsync(id);
