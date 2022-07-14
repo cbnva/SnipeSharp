@@ -15,7 +15,12 @@ namespace SnipeSharp.Serialization.Converters
                 // instead of properly transforming it.
                 if(serializer.Deserialize<string>(reader) is string response && DateTime.TryParse(response, out var datetime))
                     return datetime;
-            } else if(serializer.Deserialize<DateObjectResponse>(reader) is DateObjectResponse response && DateTime.TryParse(response.DateTime, out var datetime))
+            }
+            else if(reader.TokenType == JsonToken.Date && reader.Value != null)
+            {
+                return (DateTime)reader.Value;
+            }
+            else if(serializer.Deserialize<DateObjectResponse>(reader) is DateObjectResponse response && DateTime.TryParse(response.DateTime, out var datetime))
                 return datetime;
             return null;
         }
